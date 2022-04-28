@@ -1,4 +1,4 @@
-package com.liuiie.demo.utils;
+package com.liuiie.demo.utils.JsonUtil;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
