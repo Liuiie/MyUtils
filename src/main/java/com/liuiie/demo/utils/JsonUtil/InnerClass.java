@@ -11,7 +11,20 @@ import java.util.Map;
  * @since 2022/4/27 20:14
  */
 public interface InnerClass {
-    TypeReference<Map<String, Object>> MAP_OBJECT = new TypeReference<Map<String, Object>>() {};
+    /**
+     * TypeReference泛型实现类
+     *
+     * @param <T>
+     */
+    class TypeReferenceImpl<T> extends TypeReference<T> {}
 
-    TypeReference<Map<String, String>> MAP_STRING = new TypeReference<Map<String, String>>() {};
+    /**
+     * Map<String, Object> TypeReference实现类
+     */
+    class StrObjectMap extends TypeReference<Map<String, Object>> {}
+
+    /**
+     * Map<String, String> TypeReference实现类
+     */
+    class StrStrMap extends TypeReference<Map<String, String>> {}
 }
