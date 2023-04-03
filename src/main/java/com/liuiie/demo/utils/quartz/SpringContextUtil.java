@@ -1,4 +1,4 @@
-package com.liuiie.demo.utils.RedisLock;
+package com.liuiie.demo.utils.quartz;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

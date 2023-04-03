@@ -1,4 +1,4 @@
-package com.liuiie.demo.utils.CurrentThread;
+package com.liuiie.demo.utils.thread;
 
 /**
  * ThreadInfo

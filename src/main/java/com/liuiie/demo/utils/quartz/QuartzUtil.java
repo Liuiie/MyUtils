@@ -1,4 +1,4 @@
-package com.liuiie.demo.utils.Quartz;
+package com.liuiie.demo.utils.quartz;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
