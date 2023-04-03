@@ -1,4 +1,4 @@
-package com.liuiie.demo.utils.Quartz;
+package com.liuiie.demo.utils.lock;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

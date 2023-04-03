@@ -1,4 +1,4 @@
-package com.liuiie.demo.utils.RedisLock;
+package com.liuiie.demo.utils.lock;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.CollectionUtils;

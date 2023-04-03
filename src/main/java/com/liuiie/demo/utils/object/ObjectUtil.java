@@ -1,4 +1,4 @@
-package com.liuiie.demo.utils.ObjectUtils;
+package com.liuiie.demo.utils.object;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

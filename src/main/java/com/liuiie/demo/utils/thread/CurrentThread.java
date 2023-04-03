@@ -1,4 +1,4 @@
-package com.liuiie.demo.utils.CurrentThread;
+package com.liuiie.demo.utils.thread;
 
 /**
  * 本地线程变量存放类

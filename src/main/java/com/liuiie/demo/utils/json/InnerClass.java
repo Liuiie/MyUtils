@@ -1,4 +1,4 @@
-package com.liuiie.demo.utils.JsonUtil;
+package com.liuiie.demo.utils.json;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
