@@ -52,9 +52,9 @@ public class CryptoUtils {
     /**
      * 生成对称密钥，目前支持的算法有AES、DES
      *
-     * @param algorithm
-     * @return
-     * @throws NoSuchAlgorithmException
+     * @param algorithm 算法
+     * @return 对称密钥
+     * @throws NoSuchAlgorithmException 无对应算法异常
      */
     public static String generateSymmetricKey(Algorithm algorithm) throws NoSuchAlgorithmException {
         KeyGenerator generator = KeyGenerator.getInstance(algorithm.getName());
@@ -66,8 +66,8 @@ public class CryptoUtils {
     /**
      * 生成非对称密钥对，目前支持的算法有RSA、DSA。备注：默认生成的密钥格式为PKCS8
      *
-     * @param algorithm
-     * @return
+     * @param algorithm 算法
+     * @return 非对称密钥对
      * @throws NoSuchAlgorithmException
      */
     public static AsymmetricKeyPair generateAsymmetricKeyPair(Algorithm algorithm) throws NoSuchAlgorithmException {
@@ -79,10 +79,26 @@ public class CryptoUtils {
         return new AsymmetricKeyPair(publicKey, privateKey);
     }
 
+    /**
+     * RSA 加密
+     *
+     * @param publicKeyText 公钥
+     * @param plainText 未加密数据
+     * @return 加密后数据
+     * @throws Exception 异常
+     */
     public static String encryptByRSA(String publicKeyText, String plainText) throws Exception {
         return encryptAsymmetrically(publicKeyText, plainText, Algorithm.Encryption.RSA_ECB_PKCS1);
     }
 
+    /**
+     * RSA 解密
+     *
+     * @param privateKeyText 私钥
+     * @param ciphertext 加密数据
+     * @return 解密后数据
+     * @throws Exception 异常
+     */
     public static String decryptByRSA(String privateKeyText, String ciphertext) throws Exception {
         return decryptAsymmetrically(privateKeyText, ciphertext, Algorithm.Encryption.RSA_ECB_PKCS1);
     }
@@ -90,10 +106,10 @@ public class CryptoUtils {
     /**
      * SHA1签名算法和DSA加密算法结合使用生成数字签名
      *
-     * @param privateKeyText
-     * @param msg
+     * @param privateKeyText 私钥
+     * @param msg 数据
      * @return 数字签名
-     * @throws Exception
+     * @throws Exception 异常
      */
     public static String signBySHA1WithDSA(String privateKeyText, String msg) throws Exception {
         return doSign(privateKeyText, msg, Algorithm.Encryption.DSA, Algorithm.Signing.SHA1WithDSA);
@@ -105,7 +121,7 @@ public class CryptoUtils {
      * @param privateKeyText 私钥
      * @param msg 待加签内容
      * @return 数字签名
-     * @throws Exception
+     * @throws Exception 异常
      */
     public static String signBySHA1WithRSA(String privateKeyText, String msg) throws Exception {
         return doSign(privateKeyText, msg, Algorithm.Encryption.RSA_ECB_PKCS1, Algorithm.Signing.SHA1WithRSA);
@@ -117,7 +133,7 @@ public class CryptoUtils {
      * @param privateKeyText 私钥
      * @param msg 待加签内容
      * @return 数字签名
-     * @throws Exception
+     * @throws Exception 异常
      */
     public static String signBySHA256WithRSA(String privateKeyText, String msg) throws Exception {
         return doSign(privateKeyText, msg, Algorithm.Encryption.RSA_ECB_PKCS1, Algorithm.Signing.SHA256WithRSA);
@@ -130,7 +146,7 @@ public class CryptoUtils {
      * @param msg 待验签内容
      * @param signatureText 数字
      * @return 检验是否成功
-     * @throws Exception
+     * @throws Exception 异常
      */
     public static boolean verifyBySHA1WithDSA(String publicKeyText, String msg, String signatureText) throws Exception {
         return doVerify(publicKeyText, msg, signatureText, Algorithm.Encryption.DSA, Algorithm.Signing.SHA1WithDSA);
@@ -143,7 +159,7 @@ public class CryptoUtils {
      * @param msg 待验签内容
      * @param signatureText 签名
      * @return 校验是否成功
-     * @throws Exception
+     * @throws Exception 异常
      */
     public static boolean verifyBySHA1WithRSA(String publicKeyText, String msg, String signatureText) throws Exception {
         return doVerify(publicKeyText, msg, signatureText, Algorithm.Encryption.RSA_ECB_PKCS1, Algorithm.Signing.SHA1WithRSA);
@@ -156,7 +172,7 @@ public class CryptoUtils {
      * @param msg 待验签内容
      * @param signatureText 签名
      * @return 校验是否成功
-     * @throws Exception
+     * @throws Exception 异常
      */
     public static boolean verifyBySHA256WithRSA(String publicKeyText, String msg, String signatureText) throws Exception {
         return doVerify(publicKeyText, msg, signatureText, Algorithm.Encryption.RSA_ECB_PKCS1, Algorithm.Signing.SHA256WithRSA);
@@ -169,8 +185,8 @@ public class CryptoUtils {
      * @param iv 加密向量，只有CBC模式才支持，如果是CBC则必传
      * @param plainText 明文
      * @param algorithm 对称加密算法，如AES、DES
-     * @return
-     * @throws Exception
+     * @return 加密后数据
+     * @throws Exception 异常
      */
     public static String encryptSymmetrically(String secretKey, String iv, String plainText, Algorithm algorithm) throws Exception {
         SecretKey key = decodeSymmetricKey(secretKey, algorithm);
@@ -188,8 +204,8 @@ public class CryptoUtils {
      * @param iv 加密向量，只有CBC模式才支持，如果是CBC则必传
      * @param ciphertext 密文
      * @param algorithm 对称加密算法，如AES、DES
-     * @return
-     * @throws Exception
+     * @return 解密后数据
+     * @throws Exception 异常
      */
     public static String decryptSymmetrically(String secretKey, String iv, String ciphertext, Algorithm algorithm) throws Exception {
         SecretKey key = decodeSymmetricKey(secretKey, algorithm);
@@ -205,8 +221,8 @@ public class CryptoUtils {
      * @param publicKeyText 公钥
      * @param plainText 明文
      * @param algorithm 非对称加密算法
-     * @return
-     * @throws Exception
+     * @return 加密后数据
+     * @throws Exception 异常
      */
     public static String encryptAsymmetrically(String publicKeyText, String plainText, Algorithm algorithm) throws Exception {
         PublicKey publicKey = regeneratePublicKey(publicKeyText, algorithm);
@@ -221,8 +237,8 @@ public class CryptoUtils {
      * @param privateKeyText 私钥
      * @param ciphertext 密文
      * @param algorithm 非对称加密算法
-     * @return
-     * @throws Exception
+     * @return 解密后数据
+     * @throws Exception  异常
      */
     public static String decryptAsymmetrically(String privateKeyText, String ciphertext, Algorithm algorithm) throws Exception {
         PrivateKey privateKey = regeneratePrivateKey(privateKeyText, algorithm);
@@ -239,7 +255,7 @@ public class CryptoUtils {
      * @param encryptionAlgorithm 加密算法，见Algorithm中的加密算法
      * @param signatureAlgorithm 签名算法，见Algorithm中的签名算法
      * @return 数字签名
-     * @throws Exception
+     * @throws Exception 异常
      */
     public static String doSign(String privateKeyText, String msg, Algorithm encryptionAlgorithm, Algorithm signatureAlgorithm)
             throws Exception {
@@ -261,7 +277,7 @@ public class CryptoUtils {
      * @param encryptionAlgorithm 加密算法，见Algorithm中的加密算法
      * @param signatureAlgorithm 签名算法，见Algorithm中的签名算法
      * @return 校验是否成功
-     * @throws Exception
+     * @throws Exception 异常
      */
     public static boolean doVerify(String publicKeyText, String msg, String signatureText, Algorithm encryptionAlgorithm,
                                    Algorithm signatureAlgorithm) throws Exception {
@@ -277,7 +293,7 @@ public class CryptoUtils {
      *
      * @param secretKey 密钥
      * @param algorithm 算法
-     * @return
+     * @return 异常
      */
     private static SecretKey decodeSymmetricKey(String secretKey, Algorithm algorithm) {
         byte[] key = BASE64_DECODER.decode(secretKey);
