@@ -101,6 +101,13 @@
             <version>3.3.0</version>
         </dependency>
 
+        <!--Guava中自带的布隆过滤器-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>28.0-jre</version>
+        </dependency>
+
     </dependencies>
 
     <build>
