@@ -5,13 +5,43 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.UUID;
 
-@SpringBootTest
+//@SpringBootTest
 class DemoApplicationTests {
+    @Test
+    public void parseTest() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMM");
+        System.out.println(dateFormat.format(new Date()));
+    }
+
+    @Test
+    public void stringCompare() {
+        List<String> versions = Arrays.asList("20241", "20242", "20243", "20244", "20245");
+        versions.sort((a, b) -> b.compareTo(a));
+        System.out.println(versions.get(0));
+    }
+    
+    @Test
+    public void dateCheck() {
+        // 验证日期格式为YYYY-MM-DD的正则表达式为
+        String yearRegex = "([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})";
+        String yearMonthRegex = "(([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})-(([0]+[1-9])|([1]+[0-2])))";
+        String dateRegex = "(([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})-(((0[13578]|1[02])-(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)-(0[1-9]|[12][0-9]|30))|(02-(0[1-9]|[1][0-9]|2[0-8]))))|((([0-9]{2})(0[48]|[2468][048]|[13579][26])|((0[48]|[2468][048]|[3579][26])00))-02-29)";
+        String dateSimpleRegex = "([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})-(((0[13578]|1[02])-(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)-(0[1-9]|[12][0-9]|30))|(02-(0[1-9]|[1][0-9]|2[0-8])))";
+        System.out.println("2023-02-29".matches(dateRegex));
+    }
+
+    @Test
+    public void createUUID() {
+        System.out.println(UUID.randomUUID().toString().replaceAll("-", ""));
+    }
 
     @Test
     public void demoApplicationTests() {
