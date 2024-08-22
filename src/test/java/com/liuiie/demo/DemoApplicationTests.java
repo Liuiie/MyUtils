@@ -1,10 +1,15 @@
 package com.liuiie.demo;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -14,6 +19,126 @@ import java.util.UUID;
 
 //@SpringBootTest
 class DemoApplicationTests {
+    @Test
+    public void test() {
+
+    }
+
+    public static String removeNumberAndHash(String input) {
+        // 使用正则表达式匹配并替换#及其前面的数字
+        return input.replaceAll("\\d+#", "");
+    }
+
+    @Test
+    public void calculateHourlyOverlapTest() {
+        // 示例开始时间和结束时间（可以根据需要修改）
+        String startTime = "2024-06-12 09:15:30";
+        String endTime = "2024-06-14 12:15:15";
+
+        System.out.println("Hourly overlap minutes:");
+        int[] overlapMinutes = calculateHourlyOverlap2(DateUtil.parse(startTime), DateUtil.parse(endTime));
+        for (int i = 0; i < overlapMinutes.length; i++) {
+            System.out.println("Hour " + (i + 1) + ": " + overlapMinutes[i] + " minutes");
+        }
+    }
+
+    public static int[] calculateHourlyOverlap2(Date startTime, Date endTime) {
+        int[] hourlyMinutes = new int[24];
+
+        LocalDateTime startDateTime = startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime endDateTime = endTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+        LocalDateTime beginOfNow = LocalDateTime.now().with(LocalTime.MIN);
+        LocalDateTime endOfNow = LocalDateTime.now().with(LocalTime.MAX);
+
+        int startHour = startDateTime.getHour();
+        int endHour = endDateTime.getHour();
+
+        if (startDateTime.isBefore(beginOfNow) && endDateTime.isAfter(endOfNow)) {
+            for (int hour = 0; hour < 24; hour++) {
+                hourlyMinutes[hour] = 60;
+            }
+        } else if (startDateTime.isBefore(beginOfNow) && endDateTime.isBefore(endOfNow)) {
+            for (int hour = 0; hour <= endHour; hour++) {
+                hourlyMinutes[hour] = 60;
+            }
+            hourlyMinutes[endHour] = endDateTime.getMinute();
+        } else if (startDateTime.isAfter(beginOfNow) && endDateTime.isBefore(endOfNow)) {
+            hourlyMinutes[startHour] = 60 - startDateTime.getMinute();
+            for (int hour = startHour + 1; hour < endHour; hour++) {
+                hourlyMinutes[hour] = 60;
+            }
+            hourlyMinutes[endHour] = endDateTime.getMinute();
+        } else if (startDateTime.isAfter(beginOfNow) && endDateTime.isAfter(endOfNow)) {
+            for (int hour = startHour; hour < 24; hour++) {
+                hourlyMinutes[hour] = 60;
+            }
+            hourlyMinutes[startHour] = 60 - startDateTime.getMinute();
+        }
+
+        return hourlyMinutes;
+    }
+
+    public static int[] calculateHourlyOverlap(Date startTime, Date endTime) {
+        // 创建一个数组来存储每小时的重叠分钟数
+        int[] hourlyMinutes = new int[24];
+
+        Date now = new Date();
+        DateTime beginOfNow = DateUtil.beginOfDay(now);
+        DateTime endOfNow = DateUtil.endOfDay(now);
+        DateTime startDateTime = DateUtil.date(startTime);
+        DateTime endDateTime = DateUtil.date(endTime);
+        int startHour = DateUtil.hour(startDateTime, true);
+        int endHour = DateUtil.hour(endTime, true);
+        // 情况1: 开始时间在当天之前，结束时间在当天之后
+        if (startDateTime.isBefore(beginOfNow) && endDateTime.isAfter(endOfNow)) {
+            for (int hour = 0; hour < 24; hour++) {
+                hourlyMinutes[hour] = 60;
+            }
+            // 情况2: 开始时间在当天之前，结束时间在当天结束之前
+        } else if (startDateTime.isBefore(beginOfNow) && endDateTime.isBefore(endOfNow)) {
+            for (int hour = 0; hour < 24; hour++) {
+                if (hour < endHour) {
+                    hourlyMinutes[hour] = 60;
+                } else if (hour == endHour) {
+                    hourlyMinutes[hour] = DateUtil.minute(endTime);
+                } else {
+                    hourlyMinutes[hour] = 0;
+                }
+            }
+        } else if (startDateTime.isAfter(beginOfNow) && endDateTime.isBefore(endOfNow)) {
+            // 情况3: 开始时间在当天，结束时间也在当天
+            for (int hour = 0; hour < 24; hour++) {
+                if (hour == startHour) {
+                    hourlyMinutes[hour] = 60 - DateUtil.minute(startTime);
+                } else if (startHour < hour && hour < endHour) {
+                    hourlyMinutes[hour] = 60;
+                } else if (hour == endHour) {
+                    hourlyMinutes[hour] = DateUtil.minute(endDateTime);
+                } else {
+                    hourlyMinutes[hour] = 0;
+                }
+            }
+        } else if (startDateTime.isAfter(beginOfNow) && endDateTime.isAfter(endOfNow)) {
+            // 情况4: 开始时间在当天，结束时间在当天之后
+            for (int hour = 0; hour < 24; hour++) {
+                if (hour < startHour) {
+                    hourlyMinutes[hour] = 0;
+                } else if (hour == startHour) {
+                    hourlyMinutes[hour] = 60 - DateUtil.minute(startTime);
+                } else {
+                    hourlyMinutes[hour] = 60;
+                }
+            }
+        } else {
+            for (int hour = 0; hour < 24; hour++) {
+                hourlyMinutes[hour] = 0;
+            }
+        }
+
+        return hourlyMinutes;
+    }
+
     @Test
     public void parseTest() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMM");
