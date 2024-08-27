@@ -20,6 +20,19 @@ public class BigDecimalUtil {
     }
 
     /**
+     * 判断 BigDecimal 是否有小数部分
+     *      stripTrailingZeros()：去掉 BigDecimal 末尾的零。
+     *      scale()：返回 BigDecimal 的小数位数。如果小数位数大于零，则表示有小数部分。
+     *
+     * @param number 需判断得值
+     * @return true=有小数部分 false=没有小数部分
+     */
+    public static boolean hasFractionalPart(BigDecimal number) {
+        // Convert to BigInteger and compare
+        return number.stripTrailingZeros().stripTrailingZeros().scale() > 0;
+    }
+
+    /**
      * 提供精确的加法运算。
      *
      * @param v1 被加数
