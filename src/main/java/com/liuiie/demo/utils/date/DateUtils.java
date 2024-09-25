@@ -1,5 +1,7 @@
 package com.liuiie.demo.utils.date;
 
+import java.util.Date;
+
 /**
  * DateUtils
  *
@@ -37,5 +39,30 @@ public class DateUtils {
      */
     public boolean dateCheck(String date) {
         return date.matches(DATE_REGEX);
+    }
+
+    /**
+     * 计算两个时间的重叠时长
+     *
+     * @param start1 开始时间1
+     * @param end1 结束时间1
+     * @param start2 开始时间2
+     * @param end2 结束时间2
+     * @return 重叠时长
+     */
+    public static long calculateOverlapMinutes(Date start1, Date end1, Date start2, Date end2) {
+        // 计算重叠的开始和结束时间
+        Date overlapStart = start1.after(start2) ? start1 : start2;
+        Date overlapEnd = end1.before(end2) ? end1 : end2;
+
+        // 计算重叠时间的分钟数
+        if (overlapStart.before(overlapEnd)) {
+            long diffInMillis = overlapEnd.getTime() - overlapStart.getTime();
+            // 转换为分钟
+            return diffInMillis / (60 * 1000);
+        } else {
+            // 没有重叠
+            return 0;
+        }
     }
 }
