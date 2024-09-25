@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 public class ListUtil {
     /**
      * 取交集
+     *      使用HashSet快速检查元素是否存在于另一个集合中
      *
      * @param list1 集合1
      * @param list2 集合2
@@ -30,6 +31,7 @@ public class ListUtil {
 
     /**
      * 取并集
+     *      将两个List转换为Set以自动去除重复元素，然后将它们合并
      *
      * @param list1 集合1
      * @param list2 集合2
@@ -43,6 +45,7 @@ public class ListUtil {
 
     /**
      * 取差集 (list1 - list2)
+     *      从第一个集合中移除第二个集合中的所有元素
      *
      * @param list1 集合1
      * @param list2 集合2
@@ -56,6 +59,7 @@ public class ListUtil {
 
     /**
      * 取去重后的并集
+     *      将两个列表合并成一个流，使用distinct()方法去除重复项
      *
      * @param list1 集合1
      * @param list2 集合2
