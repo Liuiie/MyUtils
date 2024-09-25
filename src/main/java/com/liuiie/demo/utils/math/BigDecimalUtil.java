@@ -20,6 +20,28 @@ public class BigDecimalUtil {
     }
 
     /**
+     * 调整精度和取整方式
+     *
+     * @param number 调整值
+     * @param newScale 精度
+     * @param roundingMode 取整方式
+     * @return 新值
+     */
+    public static BigDecimal setScale(BigDecimal number, int newScale, int roundingMode) {
+        return number.setScale(newScale, roundingMode);
+    }
+
+    /**
+     * 取小数部分
+     *
+     * @param number 数值
+     * @return 小数部分
+     */
+    public static BigDecimal remainder(BigDecimal number) {
+        return number.remainder(BigDecimal.ONE);
+    }
+
+    /**
      * 判断 BigDecimal 是否有小数部分
      *      stripTrailingZeros()：去掉 BigDecimal 末尾的零。
      *      scale()：返回 BigDecimal 的小数位数。如果小数位数大于零，则表示有小数部分。
