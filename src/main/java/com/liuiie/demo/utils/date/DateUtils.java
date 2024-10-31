@@ -1,6 +1,14 @@
 package com.liuiie.demo.utils.date;
 
+import org.springframework.util.ObjectUtils;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * DateUtils
@@ -64,5 +72,61 @@ public class DateUtils {
             // 没有重叠
             return 0;
         }
+    }
+
+    /**
+     * 时间段冲突校验
+     *
+     * @param events 时间段信息
+     */
+    public static Set<String> timeConflictCheck(List<Event> events) {
+        if (ObjectUtils.isEmpty(events)) {
+            return null;
+        }
+        Map<String, List<Event>> groupedEvents = new HashMap<>();
+        // 按名字分组
+        for (Event event : events) {
+            groupedEvents.computeIfAbsent(event.getName(), k -> new ArrayList<>())
+                    .add(event);
+        }
+        Set<String> conflictNameSet = new HashSet<>();
+        // 检查时间冲突
+        for (Map.Entry<String, List<Event>> entry : groupedEvents.entrySet()) {
+            String name = entry.getKey();
+            List<Event> eventList = entry.getValue();
+
+            if (hasTimeConflict(eventList)) {
+                conflictNameSet.add(name);
+                System.out.println("时间冲突在名称: " + name);
+            } else {
+                System.out.println("没有时间冲突在名称: " + name);
+            }
+        }
+        return conflictNameSet;
+    }
+
+    /**
+     * 判断是否存在时间段冲突
+     *
+     * @param events 时间段信息
+     * @return true=存在冲突 false=不存在冲突
+     */
+    public static boolean hasTimeConflict(List<Event> events) {
+        if (ObjectUtils.isEmpty(events) || events.size() == 1) {
+            return false;
+        }
+        // 按开始时间排序
+        events.sort((e1, e2) -> e1.getStartTime().compareTo(e2.getStartTime()));
+        for (int i = 0; i < events.size() - 1; i++) {
+            Event current = events.get(i);
+            Event next = events.get(i + 1);
+            // 检查时间是否重叠
+            if (current.getEndTime().after(next.getStartTime())) {
+                // 存在冲突
+                return true;
+            }
+        }
+        // 无冲突
+        return false;
     }
 }
