@@ -129,4 +129,17 @@ public class DateUtils {
         // 无冲突
         return false;
     }
+
+    /**
+     * 判断时间段是否冲突
+     *
+     * @param start1 开始时间1
+     * @param end1 结束时间1
+     * @param start2 开始时间2
+     * @param end2 结束时间2
+     * @return true=冲突 false=不冲突
+     */
+    public static boolean isOverlapping(Date start1, Date end1, Date start2, Date end2) {
+        return start1.before(end2) && end1.after(start2);
+    }
 }
