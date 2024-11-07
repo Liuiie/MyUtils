@@ -14,6 +14,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * HttpUtils
@@ -160,5 +161,70 @@ public class HttpUtils {
         HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
         // 发送 GET 请求
         return restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
+    }
+
+    /**
+     * 在现有地址上增加传参
+     *      接受多个查询参数的方式：Map<String, String>
+     *
+     * @param url 原地址
+     * @param newParams 入参信息
+     * @return 新地址
+     */
+    public static String addQueryParameters(String url, Map<String, String> newParams) {
+        // 检查 URL 是否包含查询字符串和锚点
+        int queryIndex = url.indexOf('?');
+        int fragmentIndex = url.indexOf('#');
+
+        // 如果没有查询部分并且有锚点
+        if (queryIndex == -1 && fragmentIndex != -1) {
+            // 处理带有锚点但是没有查询部分的情况
+            return url + "?" + buildQueryParams(newParams);
+        }
+
+        // 提取查询部分和锚点部分
+        String baseUrl = url;
+        String query = "";
+        String fragment = "";
+
+        if (queryIndex != -1) {
+            if (fragmentIndex != -1 && fragmentIndex > queryIndex) {
+                baseUrl = url.substring(0, queryIndex);  // 基础部分不包含查询字符串和锚点
+                query = url.substring(queryIndex + 1, fragmentIndex);  // 提取查询部分
+                fragment = url.substring(fragmentIndex);  // 提取锚点部分
+            } else {
+                baseUrl = url.substring(0, queryIndex);  // 基础部分不包含查询字符串
+                query = url.substring(queryIndex + 1);  // 提取查询部分
+            }
+        } else {
+            // 如果没有查询参数，处理锚点情况
+            if (fragmentIndex != -1) {
+                baseUrl = url.substring(0, fragmentIndex);  // 基础部分不包含锚点
+                fragment = url.substring(fragmentIndex);  // 提取锚点部分
+            }
+        }
+
+        // 构建新的查询参数字符串
+        String newQuery = query.isEmpty() ? buildQueryParams(newParams) : query + "&" + buildQueryParams(newParams);
+
+        // 如果有锚点部分，拼接在新的查询字符串后面
+        return baseUrl + "?" + newQuery + fragment;
+    }
+
+    /**
+     * 构建查询参数字符串
+     *
+     * @param newParams 新入参
+     * @return 参数字符串
+     */
+    private static String buildQueryParams(Map<String, String> newParams) {
+        StringBuilder queryString = new StringBuilder();
+        for (Map.Entry<String, String> entry : newParams.entrySet()) {
+            if (queryString.length() > 0) {
+                queryString.append("&");
+            }
+            queryString.append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        return queryString.toString();
     }
 }
