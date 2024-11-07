@@ -93,7 +93,6 @@ public class HttpUtils {
         RestTemplate restTemplate = new RestTemplate(RestTemplateConfig.generateHttpRequestFactory());
         //此处加编码格式转换
         restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-
         httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<T> httpEntity = new HttpEntity<>(body, httpHeaders);
         //访问第三方服务器
@@ -124,7 +123,6 @@ public class HttpUtils {
         RestTemplate restTemplate = new RestTemplate(RestTemplateConfig.generateHttpRequestFactory());
         //此处加编码格式转换
         restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-
         // 设置请求头
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<T> httpEntity = new HttpEntity<>(httpHeaders);
@@ -155,7 +153,6 @@ public class HttpUtils {
         RestTemplate restTemplate = new RestTemplate(RestTemplateConfig.generateHttpRequestFactory());
         //此处加编码格式转换
         restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-
         // 设置请求头
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<?> httpEntity = new HttpEntity<>(httpHeaders);
@@ -175,38 +172,40 @@ public class HttpUtils {
         // 检查 URL 是否包含查询字符串和锚点
         int queryIndex = url.indexOf('?');
         int fragmentIndex = url.indexOf('#');
-
         // 如果没有查询部分并且有锚点
         if (queryIndex == -1 && fragmentIndex != -1) {
             // 处理带有锚点但是没有查询部分的情况
             return url + "?" + buildQueryParams(newParams);
         }
-
         // 提取查询部分和锚点部分
         String baseUrl = url;
         String query = "";
         String fragment = "";
-
         if (queryIndex != -1) {
             if (fragmentIndex != -1 && fragmentIndex > queryIndex) {
-                baseUrl = url.substring(0, queryIndex);  // 基础部分不包含查询字符串和锚点
-                query = url.substring(queryIndex + 1, fragmentIndex);  // 提取查询部分
-                fragment = url.substring(fragmentIndex);  // 提取锚点部分
+                // 基础部分不包含查询字符串和锚点
+                baseUrl = url.substring(0, queryIndex);
+                // 提取查询部分
+                query = url.substring(queryIndex + 1, fragmentIndex);
+                // 提取锚点部分
+                fragment = url.substring(fragmentIndex);
             } else {
-                baseUrl = url.substring(0, queryIndex);  // 基础部分不包含查询字符串
-                query = url.substring(queryIndex + 1);  // 提取查询部分
+                // 基础部分不包含查询字符串
+                baseUrl = url.substring(0, queryIndex);
+                // 提取查询部分
+                query = url.substring(queryIndex + 1);
             }
         } else {
             // 如果没有查询参数，处理锚点情况
             if (fragmentIndex != -1) {
-                baseUrl = url.substring(0, fragmentIndex);  // 基础部分不包含锚点
-                fragment = url.substring(fragmentIndex);  // 提取锚点部分
+                // 基础部分不包含锚点
+                baseUrl = url.substring(0, fragmentIndex);
+                // 提取锚点部分
+                fragment = url.substring(fragmentIndex);
             }
         }
-
         // 构建新的查询参数字符串
         String newQuery = query.isEmpty() ? buildQueryParams(newParams) : query + "&" + buildQueryParams(newParams);
-
         // 如果有锚点部分，拼接在新的查询字符串后面
         return baseUrl + "?" + newQuery + fragment;
     }
