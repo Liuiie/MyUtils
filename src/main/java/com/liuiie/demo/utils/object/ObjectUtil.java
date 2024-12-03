@@ -1,9 +1,15 @@
 package com.liuiie.demo.utils.object;
 
+import cn.hutool.core.bean.DynaBean;
+import org.springframework.util.ObjectUtils;
+
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * ObjectUtils
@@ -12,6 +18,48 @@ import java.util.Map;
  * @since 2023/1/6 16:25
  */
 public class ObjectUtil {
+    /**
+     * 设置构建属性的值
+     *      根据需要增加
+     *
+     * @param t 对象
+     * @return 更新后的对象
+     * @param <T> 泛型
+     */
+    public static <T> T setCreateAttValue(T t) {
+        if (ObjectUtils.isEmpty(t)) {
+            return null;
+        }
+        DynaBean dynaBean = new DynaBean(t);
+        // 判断对象是否包含创建时间
+        boolean createTimeTag = dynaBean.containsProp("createTime");
+        if (createTimeTag) {
+            dynaBean.set("createTime", new Date());
+        }
+        return setUpdateAttValue(t);
+    }
+
+    /**
+     * 设置更新属性的值
+     *      根据需要增加
+     *
+     * @param t 对象
+     * @return 更新后的对象
+     * @param <T> 泛型
+     */
+    public static <T> T setUpdateAttValue(T t) {
+        if (ObjectUtils.isEmpty(t)) {
+            return null;
+        }
+        DynaBean dynaBean = new DynaBean(t);
+        // 判断对象是否包含修改时间
+        boolean createTimeTag = dynaBean.containsProp("updateTime");
+        if (createTimeTag) {
+            dynaBean.set("updateTime", new Date());
+        }
+        return t;
+    }
+
     /**
      * 检查对象中是否有属性为空
      *      基本类型会赋初始值，所以未进行判断（属性最好使用包装类型）
@@ -50,25 +98,22 @@ public class ObjectUtil {
     /**
      * 判断对象是否为空
      *
-     * @param object 对象
+     * @param obj 对象
      * @return 判断结果
      */
-    private static boolean isEmpty(Object object) {
-        if (object == null) {
+    private static boolean isEmpty(Object obj) {
+        if (obj == null) {
             return true;
+        } else if (obj instanceof Optional) {
+            return !((Optional)obj).isPresent();
+        } else if (obj instanceof CharSequence) {
+            return ((CharSequence)obj).length() == 0;
+        } else if (obj.getClass().isArray()) {
+            return Array.getLength(obj) == 0;
+        } else if (obj instanceof Collection) {
+            return ((Collection)obj).isEmpty();
+        } else {
+            return obj instanceof Map && ((Map) obj).isEmpty();
         }
-        if (object instanceof String && (object.toString().trim().equals(""))) {
-            return true;
-        }
-        if (object instanceof Collection && ((Collection) object).isEmpty()) {
-            return true;
-        }
-        if (object instanceof Map && ((Map) object).isEmpty()) {
-            return true;
-        }
-        if (object instanceof Object[] && ((Object[]) object).length == 0) {
-            return true;
-        }
-        return false;
     }
 }
