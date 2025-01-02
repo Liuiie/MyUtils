@@ -42,18 +42,19 @@ public final class BeanUtils {
      * @param src      源类
      * @param dest     目标类
      * @param fieldMap 字段映射表
+     * @param ignoreFields 忽略字段表
      * @param <S>      源类
      * @param <D>      目标类
      * @return mapperFacade 实例
      */
-    private static synchronized <S, D> MapperFacade classMap(Class<S> src, Class<D> dest, Map<String, String> fieldMap) {
+    private static synchronized <S, D> MapperFacade classMap(Class<S> src, Class<D> dest, Map<String, String> fieldMap, List<String> ignoreFields) {
         String key = src.getCanonicalName() + ":" + dest.getCanonicalName();
         if (CACHE_MAPPER.containsKey(key)) {
             return CACHE_MAPPER.get(key);
         }
 
         // 缓存字段映射表
-        return register(src, dest, fieldMap);
+        return register(src, dest, fieldMap, ignoreFields);
     }
 
     /**
@@ -62,17 +63,19 @@ public final class BeanUtils {
      * @param src      源类
      * @param dest     目标类
      * @param fieldMap 字段映射表
+     * @param ignoreFields 忽略字段表
      * @param <S>      源类
      * @param <D>      目标类
      */
-    public static synchronized <S, D> MapperFacade register(Class<S> src, Class<D> dest, Map<String, String> fieldMap) {
-        if (CollectionUtils.isEmpty(fieldMap)) {
-            MAPPER_FACTORY.classMap(src, dest).byDefault().register();
-        } else {
-            ClassMapBuilder<S, D> classMapBuilder = MAPPER_FACTORY.classMap(src, dest);
+    public static synchronized <S, D> MapperFacade register(Class<S> src, Class<D> dest, Map<String, String> fieldMap, List<String> ignoreFields) {
+        ClassMapBuilder<S, D> classMapBuilder = MAPPER_FACTORY.classMap(src, dest);
+        if (!CollectionUtils.isEmpty(fieldMap)) {
             fieldMap.forEach(classMapBuilder::field);
-            classMapBuilder.byDefault().register();
         }
+        if (!CollectionUtils.isEmpty(ignoreFields)) {
+            ignoreFields.forEach(classMapBuilder::exclude);
+        }
+        classMapBuilder.byDefault().register();
         String key = src.getCanonicalName() + ":" + dest.getCanonicalName();
         MapperFacade mapperFacade = MAPPER_FACTORY.getMapperFacade();
         CACHE_MAPPER.put(key, mapperFacade);
@@ -94,41 +97,7 @@ public final class BeanUtils {
         if (src == null) {
             return;
         }
-        map(src, dest, null);
-    }
-
-    /**
-     * 字段名相同的实体映射
-     *      根据源实体属性和目标类生成目标实体
-     *
-     * @param src       源实体
-     * @param destClazz 目标类
-     * @return          实例
-     * @param <S>       源类
-     * @param <D>       目标类
-     */
-    public static <S, D> D map(S src, Class<D> destClazz) {
-        if (src == null) {
-            return null;
-        }
-        return map(src, destClazz, null);
-    }
-
-    /**
-     * 字段名相同的实体集合映射
-     *      根据源实体集合属性和目标类生成目标实体集合
-     *
-     * @param src       源实体集合
-     * @param destClazz 目标类集合
-     * @return          实例集合
-     * @param <S>       源类
-     * @param <D>       目标类
-     */
-    public static <S, D> List<D> mapAsList(List<S> src, Class<D> destClazz) {
-        if (src == null) {
-            return Collections.emptyList();
-        }
-        return mapAsList(src, destClazz, null);
+        map(src, dest, null, null);
     }
 
     /**
@@ -145,7 +114,60 @@ public final class BeanUtils {
         if (src == null) {
             return;
         }
-        classMap(src.getClass(), dest.getClass(), fieldMap).map(src, dest);
+        classMap(src.getClass(), dest.getClass(), fieldMap, null).map(src, dest);
+    }
+
+    /**
+     * 携带字段映射关系的实体映射
+     *      忽略指定源类字段属性
+     *
+     * @param src      源实体
+     * @param dest     目标实体
+     * @param ignoreFields 忽略字段表
+     * @param <S>      源类
+     * @param <D>      目标类
+     */
+    public static <S, D> void map(S src, D dest, List<String> ignoreFields) {
+        if (src == null) {
+            return;
+        }
+        classMap(src.getClass(), dest.getClass(), null, ignoreFields).map(src, dest);
+    }
+
+    /**
+     * 携带字段映射关系的实体映射
+     *      根据字段映射关系将源实体属性复制到目标实体
+     *      忽略指定源类字段属性
+     *
+     * @param src      源实体
+     * @param dest     目标实体
+     * @param fieldMap 字段映射表
+     * @param ignoreFields 忽略字段表
+     * @param <S>      源类
+     * @param <D>      目标类
+     */
+    public static <S, D> void map(S src, D dest, Map<String, String> fieldMap, List<String> ignoreFields) {
+        if (src == null) {
+            return;
+        }
+        classMap(src.getClass(), dest.getClass(), fieldMap, ignoreFields).map(src, dest);
+    }
+
+    /**
+     * 字段名相同的实体映射
+     *      根据源实体属性和目标类生成目标实体
+     *
+     * @param src       源实体
+     * @param destClazz 目标类
+     * @return          实例
+     * @param <S>       源类
+     * @param <D>       目标类
+     */
+    public static <S, D> D map(S src, Class<D> destClazz) {
+        if (src == null) {
+            return null;
+        }
+        return map(src, destClazz, null, null);
     }
 
     /**
@@ -163,7 +185,62 @@ public final class BeanUtils {
         if (src == null) {
             return null;
         }
-        return classMap(src.getClass(), destClazz, fieldMap).map(src, destClazz);
+        return classMap(src.getClass(), destClazz, fieldMap, null).map(src, destClazz);
+    }
+
+    /**
+     * 携带字段映射关系的实体映射
+     *      忽略源类中指定属性
+     *
+     * @param src       源实体
+     * @param destClazz 目标类
+     * @param ignoreFields 忽略字段表
+     * @return          目标实体
+     * @param <S>       源类
+     * @param <D>       目标类
+     */
+    public static <S, D> D map(S src, Class<D> destClazz, List<String> ignoreFields) {
+        if (src == null) {
+            return null;
+        }
+        return classMap(src.getClass(), destClazz, null, ignoreFields).map(src, destClazz);
+    }
+
+    /**
+     * 携带字段映射关系的实体映射
+     *      根据字段映射关系和源实体属性生成目标实体
+     *      忽略源类中指定属性
+     *
+     * @param src       源实体
+     * @param destClazz 目标类
+     * @param fieldMap  字段映射表
+     * @param ignoreFields 忽略字段表
+     * @return          目标实体
+     * @param <S>       源类
+     * @param <D>       目标类
+     */
+    public static <S, D> D map(S src, Class<D> destClazz, Map<String, String> fieldMap, List<String> ignoreFields) {
+        if (src == null) {
+            return null;
+        }
+        return classMap(src.getClass(), destClazz, fieldMap, ignoreFields).map(src, destClazz);
+    }
+
+    /**
+     * 字段名相同的实体集合映射
+     *      根据源实体集合属性和目标类生成目标实体集合
+     *
+     * @param src       源实体集合
+     * @param destClazz 目标类集合
+     * @return          实例集合
+     * @param <S>       源类
+     * @param <D>       目标类
+     */
+    public static <S, D> List<D> mapAsList(List<S> src, Class<D> destClazz) {
+        if (src == null) {
+            return Collections.emptyList();
+        }
+        return mapAsList(src, destClazz, null, null);
     }
 
     /**
@@ -181,7 +258,45 @@ public final class BeanUtils {
         if (src == null) {
             return Collections.emptyList();
         }
-        return classMap(src.get(0).getClass(), destClazz, fieldMap).mapAsList(src, destClazz);
+        return classMap(src.get(0).getClass(), destClazz, fieldMap, null).mapAsList(src, destClazz);
+    }
+
+    /**
+     * 携带字段映射关系的实体映射
+     *      忽略源类中指定属性
+     *
+     * @param src       源实体
+     * @param destClazz 目标类
+     * @param ignoreFields 忽略字段表
+     * @return          目标实体
+     * @param <S>       源类
+     * @param <D>       目标类
+     */
+    public static <S, D> List<D> mapAsList(List<S> src, Class<D> destClazz, List<String> ignoreFields) {
+        if (src == null) {
+            return Collections.emptyList();
+        }
+        return classMap(src.get(0).getClass(), destClazz, null, ignoreFields).mapAsList(src, destClazz);
+    }
+
+    /**
+     * 携带字段映射关系的实体映射
+     *      根据字段映射关系和源实体集合属性生成目标实体集合
+     *      忽略源类中指定属性
+     *
+     * @param src       源实体
+     * @param destClazz 目标类
+     * @param fieldMap  字段映射表
+     * @param ignoreFields 忽略字段表
+     * @return          目标实体
+     * @param <S>       源类
+     * @param <D>       目标类
+     */
+    public static <S, D> List<D> mapAsList(List<S> src, Class<D> destClazz, Map<String, String> fieldMap, List<String> ignoreFields) {
+        if (src == null) {
+            return Collections.emptyList();
+        }
+        return classMap(src.get(0).getClass(), destClazz, fieldMap, ignoreFields).mapAsList(src, destClazz);
     }
 }
 
