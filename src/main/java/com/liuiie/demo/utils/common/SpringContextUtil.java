@@ -1,4 +1,4 @@
-package com.liuiie.demo.utils.lock;
+package com.liuiie.demo.utils.common;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -19,7 +19,9 @@ public class SpringContextUtil implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        appContext = applicationContext;
+        if(SpringContextUtil.appContext == null){
+            SpringContextUtil.appContext  = applicationContext;
+        }
     }
 
     public static ApplicationContext getApplicationContext() {
