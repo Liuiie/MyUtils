@@ -19,3 +19,24 @@ spring:
     # 连接Redis服务器的超时时间
     timeout: 2000
 
+
+# 存储服务
+fileOperator:
+  service: obs
+  minio:
+    #Minio服务所在地址
+    endpoint: http://172.16.115.19:9000
+    #存储桶名称
+    bucketName: xmgl
+    #访问的key
+    accessKey: dsep
+    #访问的秘钥
+    secretKey: kjj@8UF8V3DIQd
+    #mnio url
+    showUrl: https://zhgg.csti.cn/oss/${minio.bucketName}/
+  oss:
+    endpoint: 100.125.2.4:443
+    accessKey: 0TTGO6O61405AUE0QAIK
+    secretKey: kPNgm4nfkDdgyhoK3Yv9tUo4OdtX6dWdBFdZxxcX
+    bucketName: cqkjj-guanlixitongceshi
+    gatewayUrl: https://xmgltest.csti.cn/gateway/
