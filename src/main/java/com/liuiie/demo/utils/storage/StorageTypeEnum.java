@@ -1,54 +1,54 @@
 package com.liuiie.demo.utils.storage;
 
+import lombok.Getter;
+
 /**
- * StorageTypeEnum
+ * 存储类型枚举
  *
  * @author Liuiie
  * @since 2025/1/8 10:49
  */
+@Getter
 public enum StorageTypeEnum {
     /**
-     * name: 华为云, type: 1
+     * type: obs, describe: 华为云
      */
-    OBS("华为云", 1),
+    OBS("obs", "华为云"),
     /**
-     * name: 阿里云, type: 2
+     * type: aliYun, describe: 阿里云
      */
-    ALIYUN("阿里云", 2),
+    ALIYUN("aliYun", "阿里云"),
     /**
-     * name: 腾讯云, type: 3
+     * type: tencentCloud, describe: 腾讯云
      */
-    TENCENT_CLOUD("腾讯云", 3),
+    TENCENT_CLOUD("tencentCloud", "腾讯云"),
     /**
-     * name: Minio, type: 4
+     * type: minio, describe: Minio
      */
-    MINIO("Minio", 4),
+    MINIO("minio", "Minio"),
     /**
-     * name: 本地, type: 5
+     * type: local, describe: 本地
      */
-    LOCAL("本地", 5);
+    LOCAL("local", "本地");
 
-    private String name;
-    private Integer type;
+    /**
+     * 类型
+     */
+    private final String type;
+    /**
+     * 描述
+     */
+    private final String describe;
 
-    StorageTypeEnum(String name, Integer type) {
-        this.name = name;
+    /**
+     * 构造函数
+     *
+     * @param type 类型
+     * @param describe 描述
+     */
+    StorageTypeEnum(String type, String describe) {
         this.type = type;
+        this.describe = describe;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
-    }
 }

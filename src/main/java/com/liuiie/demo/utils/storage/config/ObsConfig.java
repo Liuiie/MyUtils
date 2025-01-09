@@ -1,10 +1,10 @@
-package com.liuiie.demo.utils.storage.obs;
+package com.liuiie.demo.utils.storage.config;
 
 import com.obs.services.ObsClient;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * 存储服务配置类
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * @since 2025/1/6 18:18
  */
 @Data
-@Component
+@Configuration
 public class ObsConfig {
     @Value("${fileOperator.obs.endpoint:100.125.2.4:443}")
     private String endpoint;

@@ -1,17 +1,17 @@
-package com.liuiie.demo.utils.storage.minio;
+package com.liuiie.demo.utils.storage.config;
 
 import io.minio.MinioClient;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author liuhao
  * @date 2024/08/14
  */
 @Data
-@Component
+@Configuration
 public class MinioConfig {
     @Value("${fileOperator.minio.endpoint:http://172.16.115.19:9000}")
     private String endpoint;

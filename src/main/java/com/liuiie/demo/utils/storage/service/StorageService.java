@@ -22,7 +22,7 @@
  * 5.在修改包名，模块名称，项目代码等时，请注明软件出处 https://gitee.com/stylefeng/guns
  * 6.若您的项目无法满足以上几点，可申请商业授权
  */
-package com.liuiie.demo.utils.storage;
+package com.liuiie.demo.utils.storage.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -212,5 +212,5 @@ public interface StorageService {
      *
      * @return 客户端类型
      */
-    Integer clientType();
+    String clientType();
 }
