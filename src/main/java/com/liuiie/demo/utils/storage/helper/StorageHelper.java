@@ -1,6 +1,6 @@
-package com.liuiie.demo.utils.storage;
+package com.liuiie.demo.utils.storage.helper;
 
-import com.technologymanagement.common.enums.StorageTypeEnum;
+import com.liuiie.demo.utils.storage.exception.StorageRuntimeException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
@@ -14,6 +14,9 @@ import java.nio.charset.StandardCharsets;
  * @since 2025/1/8 11:32
  */
 public class StorageHelper {
+    private StorageHelper() {
+    }
+
     /**
      * 对文件名进行编码
      *
@@ -36,18 +39,7 @@ public class StorageHelper {
                 return URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString());
             }
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw StorageRuntimeException.newInstance(e);
         }
-    }
-
-    /**
-     * 检查传入类型是否是minio
-     *      默认无值也当作是minio
-     *
-     * @param type 类型
-     * @return 如果是minio则返回true，否则返回false
-     */
-    public static boolean minioCheck(Integer type) {
-        return null == type || StorageTypeEnum.MINIO.getType().compareTo(type) == 0;
     }
 }

@@ -22,11 +22,13 @@
  * 5.在修改包名，模块名称，项目代码等时，请注明软件出处 https://gitee.com/stylefeng/guns
  * 6.若您的项目无法满足以上几点，可申请商业授权
  */
-package com.liuiie.demo.utils.storage.obs;
+package com.liuiie.demo.utils.storage.service.impl;
 
-import com.liuiie.demo.utils.storage.StorageHelper;
-import com.liuiie.demo.utils.storage.StorageService;
+import com.liuiie.demo.utils.storage.helper.StorageHelper;
+import com.liuiie.demo.utils.storage.service.StorageService;
+import com.liuiie.demo.utils.storage.annotate.StorageType;
 import com.liuiie.demo.utils.storage.StorageTypeEnum;
+import com.liuiie.demo.utils.storage.config.ObsConfig;
 import com.obs.services.ObsClient;
 import com.obs.services.exception.ObsException;
 import com.obs.services.model.HttpMethodEnum;
@@ -43,6 +45,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -50,6 +54,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -62,7 +67,9 @@ import java.util.UUID;
  * @since 2025/1/6 18:19
  */
 @Log4j2
-public class ObsUtils implements StorageService {
+@StorageType("obs")
+@Service("obsStorageService")
+public class ObsStorageServiceImpl implements StorageService {
     /**
      * 华为云客户端
      */
@@ -78,7 +85,8 @@ public class ObsUtils implements StorageService {
      */
     private final ObsConfig obsConfig;
 
-    public ObsUtils(ObsClient obsClient, ObsConfig obsConfig) {
+    @Autowired
+    public ObsStorageServiceImpl(ObsClient obsClient, ObsConfig obsConfig) {
         this.obsClient = obsClient;
         this.obsConfig = obsConfig;
         this.bucketName = obsConfig.getBucketName();
@@ -99,7 +107,7 @@ public class ObsUtils implements StorageService {
             // 使用PUT请求上传对象
             Request httpRequest =
                     builder.url(presignedUrl)
-                            .put(RequestBody.create(MediaType.parse("text/plain"), objcetName.getBytes("UTF-8")))
+                            .put(RequestBody.create(MediaType.parse("text/plain"), objcetName.getBytes(StandardCharsets.UTF_8)))
                             .build();
             OkHttpClient httpClient =
                     new OkHttpClient.Builder()
@@ -402,7 +410,7 @@ public class ObsUtils implements StorageService {
      * @return 客户端类型
      */
     @Override
-    public Integer clientType() {
+    public String clientType() {
         return StorageTypeEnum.OBS.getType();
     }
 }

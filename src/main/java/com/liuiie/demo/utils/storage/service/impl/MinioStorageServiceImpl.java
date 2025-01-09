@@ -1,8 +1,10 @@
-package com.liuiie.demo.utils.storage.minio;
+package com.liuiie.demo.utils.storage.service.impl;
 
-import com.liuiie.demo.utils.storage.StorageHelper;
-import com.liuiie.demo.utils.storage.StorageService;
+import com.liuiie.demo.utils.storage.helper.StorageHelper;
+import com.liuiie.demo.utils.storage.service.StorageService;
+import com.liuiie.demo.utils.storage.annotate.StorageType;
 import com.liuiie.demo.utils.storage.StorageTypeEnum;
+import com.liuiie.demo.utils.storage.config.MinioConfig;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
 import io.minio.GetPresignedObjectUrlArgs;
@@ -19,6 +21,8 @@ import io.minio.errors.XmlParserException;
 import io.minio.http.Method;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,7 +45,9 @@ import java.util.concurrent.TimeUnit;
  * @since 2025/1/6 18:19
  */
 @Log4j2
-public class MinioUtils implements StorageService {
+@StorageType("minio")
+@Service("minioStorageService")
+public class MinioStorageServiceImpl implements StorageService {
     /**
      * Minio客户端
      */
@@ -57,7 +63,8 @@ public class MinioUtils implements StorageService {
      */
     private final MinioConfig minioConfig;
 
-    public MinioUtils(MinioClient minioClient, MinioConfig minioConfig) {
+    @Autowired
+    public MinioStorageServiceImpl(MinioClient minioClient, MinioConfig minioConfig) {
         this.minioClient = minioClient;
         this.minioConfig = minioConfig;
         this.bucketName = minioConfig.getBucketName();
@@ -412,7 +419,7 @@ public class MinioUtils implements StorageService {
      * @return 客户端类型
      */
     @Override
-    public Integer clientType() {
+    public String clientType() {
         return StorageTypeEnum.MINIO.getType();
     }
 }
