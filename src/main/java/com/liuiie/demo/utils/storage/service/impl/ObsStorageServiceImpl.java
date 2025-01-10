@@ -24,11 +24,11 @@
  */
 package com.liuiie.demo.utils.storage.service.impl;
 
+import com.liuiie.demo.utils.storage.StorageTypeEnum;
+import com.liuiie.demo.utils.storage.annotate.StorageType;
+import com.liuiie.demo.utils.storage.config.ObsConfig;
 import com.liuiie.demo.utils.storage.helper.StorageHelper;
 import com.liuiie.demo.utils.storage.service.StorageService;
-import com.liuiie.demo.utils.storage.annotate.StorageType;
-import com.liuiie.demo.utils.storage.StorageTypeEnum;
-import com.liuiie.demo.utils.storage.config.ObsConfig;
 import com.obs.services.ObsClient;
 import com.obs.services.exception.ObsException;
 import com.obs.services.model.HttpMethodEnum;
@@ -38,22 +38,22 @@ import com.obs.services.model.PutObjectResult;
 import com.obs.services.model.TemporarySignatureRequest;
 import com.obs.services.model.TemporarySignatureResponse;
 import lombok.extern.log4j.Log4j2;
-import okhttp3.Call;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -103,27 +103,37 @@ public class ObsStorageServiceImpl implements StorageService {
     @Override
     public String uploadByPresignedUrl(String objcetName, String filePath, String presignedUrl) {
         try {
-            Request.Builder builder = new Request.Builder();
-            // 使用PUT请求上传对象
-            Request httpRequest =
-                    builder.url(presignedUrl)
-                            .put(RequestBody.create(MediaType.parse("text/plain"), objcetName.getBytes(StandardCharsets.UTF_8)))
-                            .build();
-            OkHttpClient httpClient =
-                    new OkHttpClient.Builder()
-                            .followRedirects(false)
-                            .retryOnConnectionFailure(false)
-                            .cache(null)
-                            .build();
-            Call c = httpClient.newCall(httpRequest);
-            try (Response res = c.execute()) {
-                int responseCode = res.code();
-                if (res.body() != null) {
-                    if (responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_CREATED) {
-                        return this.getShowUrl(objcetName);
-                    }
-                    log.info("预签名URL上传文件响应内容: {}", res.body().string());
+            // 创建URL对象
+            URL url = new URL(presignedUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            // 设置请求方法为PUT
+            connection.setRequestMethod("PUT");
+            // 允许输出
+            connection.setDoOutput(true);
+            // 打开文件输入流并写入HTTP连接的输出流
+            try (FileInputStream fis = new FileInputStream(new File(filePath));
+                 OutputStream os = connection.getOutputStream()) {
+                byte[] buffer = new byte[4096];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
                 }
+            }
+            StringBuilder response = new StringBuilder();
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8))) {
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                log.info("预签名URL上传文件响应内容: {}", response.toString());
+            }
+            // 获取响应码
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                log.info("预签名URL上传文件响应内容成功");
+                return this.getShowUrl(objcetName);
+            } else {
+                log.info("预签名URL上传文件失败，错误码: {}", responseCode);
             }
         } catch (IOException e) {
             log.error("获使用预签名URL上传文件失败: ", e);
