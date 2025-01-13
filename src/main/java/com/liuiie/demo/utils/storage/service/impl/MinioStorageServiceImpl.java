@@ -1,10 +1,9 @@
 package com.liuiie.demo.utils.storage.service.impl;
 
-import com.liuiie.demo.utils.storage.helper.StorageHelper;
-import com.liuiie.demo.utils.storage.service.StorageService;
-import com.liuiie.demo.utils.storage.annotate.StorageType;
 import com.liuiie.demo.utils.storage.StorageTypeEnum;
 import com.liuiie.demo.utils.storage.config.MinioConfig;
+import com.liuiie.demo.utils.storage.helper.StorageHelper;
+import com.liuiie.demo.utils.storage.service.StorageService;
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
 import io.minio.GetPresignedObjectUrlArgs;
@@ -45,7 +44,6 @@ import java.util.concurrent.TimeUnit;
  * @since 2025/1/6 18:19
  */
 @Log4j2
-@StorageType("minio")
 @Service("minioStorageService")
 public class MinioStorageServiceImpl implements StorageService {
     /**

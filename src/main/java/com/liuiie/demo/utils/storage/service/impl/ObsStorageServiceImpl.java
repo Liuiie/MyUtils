@@ -25,7 +25,6 @@
 package com.liuiie.demo.utils.storage.service.impl;
 
 import com.liuiie.demo.utils.storage.StorageTypeEnum;
-import com.liuiie.demo.utils.storage.annotate.StorageType;
 import com.liuiie.demo.utils.storage.config.ObsConfig;
 import com.liuiie.demo.utils.storage.helper.StorageHelper;
 import com.liuiie.demo.utils.storage.service.StorageService;
@@ -67,7 +66,6 @@ import java.util.UUID;
  * @since 2025/1/6 18:19
  */
 @Log4j2
-@StorageType("obs")
 @Service("obsStorageService")
 public class ObsStorageServiceImpl implements StorageService {
     /**
