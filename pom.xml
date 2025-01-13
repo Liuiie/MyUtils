@@ -220,6 +220,15 @@
             <version>4.8.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>aspose-words</groupId>
+            <artifactId>aspose-words</artifactId>
+            <version>21.1-jdk16</version>
+            <!--必有，且值必须为：system -->
+            <scope>system</scope>
+            <!--jar包所在位置，${pom.basedir}表示当前项目路径(必须使用pom，后面打包会用到)，后面是三方jar包所在路径-->
+            <systemPath>${project.basedir}/lib/7ca76f7d852dd5d5bbc9a9b01d46a0db_3bdd37da4f5e2b881a434f57ba42dc75_8.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>
