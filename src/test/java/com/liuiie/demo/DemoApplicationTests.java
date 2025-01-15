@@ -1,7 +1,14 @@
 package com.liuiie.demo;
 
+import com.alibaba.fastjson.JSON;
+import com.liuiie.demo.utils.file.BaseFile;
+import com.liuiie.demo.utils.file.DirectoryInfo;
+import com.liuiie.demo.utils.file.FileInfo;
+import com.liuiie.demo.utils.file.FileUtil;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -10,6 +17,18 @@ class DemoApplicationTests {
     @Test
     public void test() {
 
+    }
+
+    @Test
+    public void fileTest() {
+        File file = new File("G:\\Temporary\\新建文件夹");
+        BaseFile baseFile = FileUtil.fileCount(file);
+        if (baseFile instanceof DirectoryInfo) {
+            DirectoryInfo dir = (DirectoryInfo) baseFile;
+            List<FileInfo> fileInfos = dir.collectFileInfo();
+            System.out.println(JSON.toJSONString(fileInfos));
+        }
+        System.out.println(JSON.toJSONString(baseFile));
     }
 
     @Test
